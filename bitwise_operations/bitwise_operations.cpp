@@ -2,6 +2,8 @@
 #include <string>
 #include <bitset>
 #include <iomanip>
+#include <fstream>
+#include <vector>
 using namespace std;
 
 //функция для перевода short int в двоичный вид
@@ -45,15 +47,15 @@ string shortToBit(short int number) {
 short int setBit(short int number, int bitPosition) {
     return number | (1 << bitPosition);
 }
-// Функция для сброса бита
+//функция для сброса бита
 short int resetBit(short int number, int bitPosition) {
     return number & ~(1 << bitPosition);
 }
-// Функция для изменения бита
+//функция для изменения бита
 short int changeBit(short int number, int bitPosition) {
     return number ^ (1 << bitPosition);
 }
-// Функция для опроса бита
+//функция для опроса бита
 short int surveyBit(short int number, int bitPosition) {
     return (number >> bitPosition) & 1;
 }
@@ -61,30 +63,28 @@ short int surveyBit(short int number, int bitPosition) {
 string longLongToBit(long long number) {
     return bitset<64>(number).to_string();
 }
-// Функция для получения обратного кода
+//функция для получения обратного кода
 string getInverseCode(long long number) {
     if (number >= 0) 
         return longLongToBit(number);   
     else 
         return longLongToBit(~(-number)); // Инверсия всех битов   
 }
-
-// Функция для получения дополнительного кода
+//функция для получения дополнительного кода
 string getComplementaryCode(long long number) {
     if (number >= 0) 
         return longLongToBit(number);
     else 
         return longLongToBit(~(-number) + 1); // Инверсия и добавление 1
 }
-
-// Функция для вывода dump (внутреннего представления числа в памяти)
+//функция для вывода dump (внутреннего представления числа в памяти)
 void printMemoryDump(long long number) {
     unsigned char* p = (unsigned char*)&number; // Указатель на байты числа
     cout << "Dump (внутреннее представление в памяти):" << endl;
     for (size_t i = 0; i < sizeof(number); ++i) 
         cout << "Byte " << i << ": " << bitset<8>(p[i]) << " " << hex << setw(2) << setfill('0') << static_cast<int>(p[i]) << dec << endl;
 }
-// Функция для вывода dump (внутреннего представления числа в памяти)
+//функция для вывода dump (внутреннего представления числа в памяти)
 template <typename T>
 void printMemoryDump(T number) {
     unsigned char* p = (unsigned char*)&number; // Указатель на байты числа
@@ -92,6 +92,46 @@ void printMemoryDump(T number) {
     cout << "Dump (внутреннее представление в памяти):" << endl;
     for (size_t i = 0; i < size; ++i) {
         cout << "Byte " << i << ": " << bitset<8>(p[i]) << " " << hex << setw(2) << setfill('0') << static_cast<int>(p[i]) << dec << endl;
+    }
+}
+//решето Эратосфена
+void sieveOfEratosthenes(int n, const string& filename) {
+    vector<int> primes;
+    bitset<1000001> isPrime;
+    isPrime.set(); //устанавливаем все биты в 1
+    isPrime[0] = isPrime[1] = 0; //0 и 1 не являются простыми числами
+
+    for (int p = 2; p * p <= n; p++) {
+        if (isPrime[p]) {
+            for (int i = p * p; i <= n; i += p) {
+                isPrime[i] = 0; //отмечаем все кратные p как составные
+            }
+        }
+    }
+
+    for (int p = 2; p <= n; p++) {
+        if (isPrime[p]) {
+            primes.push_back(p);
+        }
+    }
+
+    //запись в файл
+    ofstream outFile(filename);
+    if (outFile.is_open()) {
+        int count = 0;
+        for (int i = 0; i < primes.size(); i++) {
+            outFile << primes[i] << " ";
+            count++;
+            if (count == 100) {
+                outFile << endl; //новая строка после каждых 100 чисел
+                count = 0;
+            }
+        }
+        outFile.close();
+        cout << "Простые числа записаны в файл " << filename << endl;
+    }
+    else {
+        cout << "Не удалось открыть файл для записи." << endl;
     }
 }
 
@@ -103,7 +143,7 @@ int main() {
 
     cout << "Введите число типа short: ";
 
-    // Проверка корректности введенного значения
+    //проверка корректности введенного значения
     while (!(cin >> x)) {
         cout << "Некорректный ввод. \nПожалуйста, введите целое число типа short: ";
         cin.clear();
@@ -144,7 +184,7 @@ int main() {
         break;
     }
 
-    // Если действие не было опросом бита, выводим обновленное значение
+    //если действие не было опросом бита, выводим обновленное значение
     if (choice != 4) {
         binary = shortToBit(x);
         cout << "Обновленное двоичное представление числа: " << binary << endl;
@@ -162,25 +202,29 @@ int main() {
     float aa;
     double bb;
     long double cc;
-    // Ввод числа типа float и вывод его dump
+    //ввод числа типа float и вывод его dump
     cout << "\nВведите число типа float: ";
     cin >> aa;
     printMemoryDump(aa);
 
-    // Ввод числа типа double и вывод его dump
+    //ввод числа типа double и вывод его dump
     cout << "\nВведите число типа double: ";
     cin >> bb;
     printMemoryDump(bb);
 
-    // Ввод числа типа long double и вывод его dump
+    //ввод числа типа long double и вывод его dump
     cout << "\nВведите число типа long double: ";
     cin >> cc;
     printMemoryDump(cc);
 
+    cout << "______________________________________________________________________________";
+    cout << "\n";
+    cout << "\nРешето Эратосфена, дамы и господа!\n";
 
+    int n = 1000000; //диапазон поиска простых чисел
+    string filename = "primes.txt";
 
-
-
+    sieveOfEratosthenes(n, filename);
 
     return 0;
     
