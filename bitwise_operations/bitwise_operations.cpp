@@ -84,6 +84,16 @@ void printMemoryDump(long long number) {
     for (size_t i = 0; i < sizeof(number); ++i) 
         cout << "Byte " << i << ": " << bitset<8>(p[i]) << " " << hex << setw(2) << setfill('0') << static_cast<int>(p[i]) << dec << endl;
 }
+// Функция для вывода dump (внутреннего представления числа в памяти)
+template <typename T>
+void printMemoryDump(T number) {
+    unsigned char* p = (unsigned char*)&number; // Указатель на байты числа
+    size_t size = sizeof(number); // Размер типа T в байтах
+    cout << "Dump (внутреннее представление в памяти):" << endl;
+    for (size_t i = 0; i < size; ++i) {
+        cout << "Byte " << i << ": " << bitset<8>(p[i]) << " " << hex << setw(2) << setfill('0') << static_cast<int>(p[i]) << dec << endl;
+    }
+}
 
 int main() {
     setlocale(LC_ALL, "Ru");
@@ -149,5 +159,29 @@ int main() {
     cout << "Дополнительный код: " << getComplementaryCode(y) << endl;
     printMemoryDump(y);
 
+    float aa;
+    double bb;
+    long double cc;
+    // Ввод числа типа float и вывод его dump
+    cout << "\nВведите число типа float: ";
+    cin >> aa;
+    printMemoryDump(aa);
+
+    // Ввод числа типа double и вывод его dump
+    cout << "\nВведите число типа double: ";
+    cin >> bb;
+    printMemoryDump(bb);
+
+    // Ввод числа типа long double и вывод его dump
+    cout << "\nВведите число типа long double: ";
+    cin >> cc;
+    printMemoryDump(cc);
+
+
+
+
+
+
     return 0;
+    
 }
