@@ -1,8 +1,10 @@
 ﻿#include <iostream>
 #include <string>
+#include <bitset>
+#include <iomanip>
 using namespace std;
 
-// функция для перевода short int в двоичный вид
+//функция для перевода short int в двоичный вид
 string shortToBit(short int number) {
     if (number == 0) return "0"; // особый случай для 0
 
@@ -39,7 +41,7 @@ string shortToBit(short int number) {
     }
     return bin;
 }
-// Функция для установки бита
+//функция для установки бита
 short int setBit(short int number, int bitPosition) {
     return number | (1 << bitPosition);
 }
@@ -55,10 +57,38 @@ short int changeBit(short int number, int bitPosition) {
 short int surveyBit(short int number, int bitPosition) {
     return (number >> bitPosition) & 1;
 }
+//функция для перевода числа типа long long в двоичный вид
+string longLongToBit(long long number) {
+    return bitset<64>(number).to_string();
+}
+// Функция для получения обратного кода
+string getInverseCode(long long number) {
+    if (number >= 0) 
+        return longLongToBit(number);   
+    else 
+        return longLongToBit(~(-number)); // Инверсия всех битов   
+}
+
+// Функция для получения дополнительного кода
+string getComplementaryCode(long long number) {
+    if (number >= 0) 
+        return longLongToBit(number);
+    else 
+        return longLongToBit(~(-number) + 1); // Инверсия и добавление 1
+}
+
+// Функция для вывода dump (внутреннего представления числа в памяти)
+void printMemoryDump(long long number) {
+    unsigned char* p = (unsigned char*)&number; // Указатель на байты числа
+    cout << "Dump (внутреннее представление в памяти):" << endl;
+    for (size_t i = 0; i < sizeof(number); ++i) 
+        cout << "Byte " << i << ": " << bitset<8>(p[i]) << " " << hex << setw(2) << setfill('0') << static_cast<int>(p[i]) << dec << endl;
+}
 
 int main() {
     setlocale(LC_ALL, "Ru");
     short int x;
+    long long int y;
     int choice, bitPosition;
 
     cout << "Введите число типа short: ";
@@ -110,6 +140,14 @@ int main() {
         cout << "Обновленное двоичное представление числа: " << binary << endl;
         cout << "Обновленное число в десятичной системе: " << x << endl;
     }
+
+    cout << "\nВведите число типа long long\n";
+    cin >> y;
+
+    cout << "Прямой код: " << longLongToBit(y) << endl;
+    cout << "Обратный код: " << getInverseCode(y) << endl;
+    cout << "Дополнительный код: " << getComplementaryCode(y) << endl;
+    printMemoryDump(y);
 
     return 0;
 }
